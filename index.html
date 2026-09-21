@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>人民幣換匯計算機</title>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #f8f9fa; display: flex; justify-content: center; padding: 20px; margin: 0; }
+    .card { background: white; width: 100%; max-width: 400px; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    h2 { text-align: center; color: #2c3e50; margin-top: 0; margin-bottom: 20px; font-size: 22px; }
+    .rate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    label { font-size: 14px; font-weight: bold; color: #333; display: block; margin-bottom: 6px; }
+    input, select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 16px; outline: none; }
+    input:focus { border-color: #4b5563; }
+    .mid-rate-box { background-color: #f1f5f9; text-align: center; padding: 12px; border-radius: 10px; font-weight: bold; color: #334155; margin-bottom: 20px; }
+    .section-title { font-size: 15px; font-weight: bold; color: #111827; margin-bottom: 8px; }
+    .field-group { margin-bottom: 20px; }
+    .result-card { background-color: #fef9c3; border-left: 5px solid #d97706; border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+    .result-title { font-weight: bold; color: #374151; font-size: 16px; }
+    .result-val { font-weight: 800; color: #b45309; font-size: 22px; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>人民幣換匯計算機</h2>
+  
+  <div class="rate-grid">
+    <div>
+      <label>自訂現金買進</label>
+      <input type="number" id="buyRate" value="4.649" step="0.001" oninput="calculate()">
+    </div>
+    <div>
+      <label>自訂現金賣出</label>
+      <input type="number" id="sellRate" value="4.811" step="0.001" oninput="calculate()">
+    </div>
+  </div>
+
+  <div class="mid-rate-box">
+    計算得出中間匯率：<span id="midRate">4.7300</span>
+  </div>
+
+  <div class="field-group">
+    <div class="section-title">1. 選擇計算匯率基準</div>
+    <select id="mode" onchange="calculate()">
+      <option value="mid">以「中間匯率」計算 (預設)</option>
+      <option value="buy">以「現金買進」計算</option>
+      <option value="sell">以「現金賣出」計算</option>
+    </select>
+  </div>
+
+  <div class="field-group">
+    <div class="section-title">2. 輸入人民幣金額 (CNY)</div>
+    <input type="number" id="cnyAmount" value="5000" oninput="calculate()">
+  </div>
+
+  <div class="result-card">
+    <span class="result-title">折合新台幣總計：</span>
+    <span class="result-val" id="totalResult">NT$ 23,650</span>
+  </div>
+</div>
+
+<script>
+  function calculate() {
+    const buy = parseFloat(document.getElementById('buyRate').value) || 0;
+    const sell = parseFloat(document.getElementById('sellRate').value) || 0;
+    const cny = parseFloat(document.getElementById('cnyAmount').value) || 0;
+    const mode = document.getElementById('mode').value;
+
+    const mid = (buy + sell) / 2;
+    document.getElementById('midRate').innerText = mid.toFixed(4);
+
+    let usedRate = mid;
+    if (mode === 'buy') usedRate = buy;
+    if (mode === 'sell') usedRate = sell;
+
+    const total = Math.round(cny * usedRate);
+    document.getElementById('totalResult').innerText = 'NT$ ' + total.toLocaleString();
+  }
+  calculate();
+</script>
+
+</body>
+</html>
